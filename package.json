@@ -1,0 +1,11 @@
+{
+  "name": "getpwuid",
+  "description": "node.js wrapper for POSIX getpwuid() function",
+  "version": "0.0.1",
+  "contributors": [ 
+    { "name": "Ken Woodruff", "email": "ken.woodruff@gmail.com" }
+  ],
+  "repository": "http://github.com/femto113/node-getpwuid.git",
+  "main": "build/Release/getpwuid.node",
+  "engines": { "node": ">= 0.4.7" }
+}
