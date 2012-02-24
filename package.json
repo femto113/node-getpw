@@ -1,5 +1,5 @@
 {
-  "name": "getpwuid",
+  "name": "getpw",
   "description": "node.js wrapper for POSIX getpwuid() function",
   "version": "0.0.1",
   "contributors": [ 
