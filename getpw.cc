@@ -21,9 +21,13 @@ using namespace v8;
 
 static inline Handle<Value> wrap(int val) { return I(val); }
 static inline Handle<Value> wrap(const char *val) { return S(val); }
+static inline Handle<Value> wrap(Handle<Value> (*val)(const Arguments&)) { return F(val); }
 
 #define SET(obj, sym, val) ((obj)->Set((sym), wrap(val)))
 #define SETQ(obj, sym, val) SET(obj, Q(sym), (val))
+
+// copy field from source struct/class pointer to field of same name in target v8 Object
+#define CLONE(tgt, field, src) SETQ(tgt, field, src->field)
 
 static Handle<Value> wrapped_getpwuid(const Arguments& args)
 {
@@ -52,8 +56,6 @@ static Handle<Value> wrapped_getpwuid(const Arguments& args)
       return Null();
   }
 
-#define CLONE(tgt, field, src) SETQ(tgt, field, src->field)
-
   Local<Object> o = O();
   CLONE(o, pw_name,  pwd);
   CLONE(o, pw_uid,   pwd);
@@ -64,9 +66,9 @@ static Handle<Value> wrapped_getpwuid(const Arguments& args)
   return scope.Close(o);
 }
 
-void getpwuid_init(Handle<Object> target)
+void getpw_init(Handle<Object> target)
 {
-  target->Set(Q(getpwuid), F(wrapped_getpwuid));
+  SETQ(target, getpwuid, wrapped_getpwuid);
 }
 
-NODE_MODULE(getpwuid, getpwuid_init)
+NODE_MODULE(getpw, getpw_init)

@@ -1,3 +1,3 @@
-var getpw = require("./build/Release/getpwuid");
+var getpw = require("./build/Release/getpw");
 
 console.log(getpw.getpwuid(process.getuid()));
