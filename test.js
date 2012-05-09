@@ -1,3 +1,8 @@
-var getpw = require("./build/Release/getpw");
+var getpw = require("./build/Release/getpw"), assert = require("assert");
 
-console.log(getpw.getpwuid(process.getuid()));
+var pw = getpw.getpwuid(process.getuid());
+["pw_name", "pw_uid"].forEach(function (k) {
+  assert.ok(k in pw, 'expected key "' + k + '" not found in result');
+});
+console.log("getpwuid: %s", JSON.stringify(getpw.getpwuid(process.getuid()), null, "  "));
+
