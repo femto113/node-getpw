@@ -1,4 +1,4 @@
-# getpw
+# getpw [![Build Status](https://secure.travis-ci.org/femto113/node-getpw.png)](http://travis-ci.org/femto113/node-getpw)
 
 node.js wrapper for POSIX {getpwuid()} function.  The main use of this method
 is to convert numeric user ids (e.g. as obtainable from {process.getuid()})
