@@ -39,3 +39,7 @@ outputs something like
 - will probably blow up on non-POSIX (i.e. Windows) OS 
 - there are some other functions (esp. {getpwnam()}) that 
   would make sense to add
+
+## Changes
+
+* 1.0.0 - updated to use node-gyp and modern V8 API

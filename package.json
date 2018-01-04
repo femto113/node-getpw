@@ -1,16 +1,13 @@
 {
   "name": "getpw",
   "description": "node.js wrapper for POSIX getpwuid() function",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "contributors": [ 
     { "name": "Ken Woodruff", "email": "ken.woodruff@gmail.com" }
   ],
   "repository": "http://github.com/femto113/node-getpw.git",
   "main": "build/Release/getpw.node",
   "scripts": {
-    "preinstall": "node-waf configure build",
-    "prepublish": "node-waf distclean",
     "test": "node test.js"
-  },
-  "engines": { "node": ">= 0.6.0" }
+  }
 }
