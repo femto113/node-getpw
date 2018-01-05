@@ -6,3 +6,9 @@ var pw = getpw.getpwuid(process.getuid());
 });
 console.log("getpwuid: %s", JSON.stringify(getpw.getpwuid(process.getuid()), null, "  "));
 
+var gr = getpw.getgrgid(process.getgid());
+["gr_name", "gr_gid"].forEach(function (k) {
+  assert.ok(k in gr, 'expected key "' + k + '" not found in result');
+});
+console.log("getgrgid: %s", JSON.stringify(getpw.getgrgid(process.getgid()), null, "  "));
+

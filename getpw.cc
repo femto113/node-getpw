@@ -5,6 +5,7 @@
 
 #include <sys/types.h> // for struct passwd
 #include <pwd.h>       // for getpwuid
+#include <grp.h>       // for getgrgid
 #include <errno.h>     // for errno
 
 #include <node.h>
@@ -15,7 +16,6 @@ using namespace v8;
 #define Q(sym) String::NewFromUtf8(isolate, #sym)
 #define S(str) String::NewFromUtf8(isolate, str)
 #define I(num) Integer::New(isolate, num)
-#define O()    Object::New(isolate)
 
 static inline Local<Value> wrap(Isolate *isolate, int val) { return I(val); }
 static inline Local<Value> wrap(Isolate *isolate, const char *val) { return S(val); }
@@ -56,7 +56,7 @@ void wrapped_getpwuid(const FunctionCallbackInfo<Value>& args) {
     return;
   }
 
-  Local<Object> o = O();
+  Local<Object> o = Object::New(isolate);
   CLONE(o, pw_name,  pwd);
   CLONE(o, pw_uid,   pwd);
   CLONE(o, pw_gid,   pwd);
@@ -66,9 +66,55 @@ void wrapped_getpwuid(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(o);
 }
 
+void wrapped_getgrgid(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+
+  if (args.Length() < 1) {
+    isolate->ThrowException(Exception::Error(S("getgrgid requires 1 argument")));
+    return;
+  }
+
+  int uid;
+
+  if (args[0]->IsNumber()) {
+    uid = args[0]->Int32Value();
+  } else {
+    isolate->ThrowException(Exception::Error(S("getgrgid argument must be a number")));
+    return;
+  }
+
+  struct group *grp;
+
+  // note this call is blocking
+  if ((grp = getgrgid(uid)) == NULL && errno != 0) {
+    isolate->ThrowException(node::ErrnoException(isolate, errno, "getgrgid"));
+    return;
+  }
+
+  if (grp == NULL) {
+    args.GetReturnValue().Set(Null(isolate));
+    return;
+  }
+
+  Local<Object> o = Object::New(isolate);
+  CLONE(o, gr_name,  grp);
+  CLONE(o, gr_gid,   grp);
+  // count members
+  int members;
+  for (members = 0; grp->gr_mem[members]; members++);
+  Local<Array> gr_mem = Array::New(isolate, members);
+  for (int i = 0; i < members; i++) {
+    gr_mem->Set(i, S(grp->gr_mem[i]));
+  }
+  o->Set(Q(gr_mem), gr_mem);
+
+  args.GetReturnValue().Set(o);
+}
+
 void getpw_init(Local<Object> exports)
 {
   NODE_SET_METHOD(exports, "getpwuid", wrapped_getpwuid);
+  NODE_SET_METHOD(exports, "getgrgid", wrapped_getgrgid);
 }
 
 NODE_MODULE(getpw, getpw_init)
